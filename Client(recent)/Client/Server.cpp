@@ -43,10 +43,10 @@ int Server::socketinit()
 
 	DWORD iobyte;
 
-	cs_packet_accept *login =
-		reinterpret_cast<cs_packet_accept*>(Send_buf);
-	login->size = sizeof(cs_packet_accept);
-	login->type = CS_LOGIN;
+	cs_packet_login *login =
+		reinterpret_cast<cs_packet_login*>(Send_buf);
+	login->packet_size = sizeof(cs_packet_login);
+	login->packet_type = CS_LOGIN_REQUEST;
 
 	ret = WSASend(sock, &WSA_send_buf, 1, &iobyte, 0, NULL, NULL);
 	//cout << iobyte << endl;
@@ -166,9 +166,9 @@ void Server::ProcessPacket(char* ptr)
 	{
 		cout << "이동 동기화 체크" << endl;
 		sc_packet_move *p = reinterpret_cast<sc_packet_move*>(ptr);
-		
 		break;
 	}
+
 	}
 }
 

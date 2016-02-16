@@ -88,8 +88,8 @@ struct cs_packet_login
 {
 	int packet_size;
 	BYTE packet_type;
-	char ID[20];
-	char Password[20];
+	//char ID[20];
+	//char Password[20];
 };
 struct cs_packet_create_room
 {

@@ -1,14 +1,24 @@
 #pragma once
-#include"Protocol.h"
-#include"Protocol_type.h"
+#include "Protocol.h"
 
 class Player
 {
+	Over_ex over_ex;
+	int id;
+	int character_type;
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 direction;
 	double velocity;
-	int Player_id;
-	bool Play;
+	int attack;
+	int health;
+	int mana;
+	int defence;
+	int current_sector;
+	char item_q;
+	char item_w;
+	int the_number_of_player;
+	double clear_time;
+	bool play;
 
 public:
 	Player();

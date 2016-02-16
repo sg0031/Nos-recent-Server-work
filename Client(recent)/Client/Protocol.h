@@ -1,18 +1,8 @@
 
 #include <D3DX10Math.h>
 
-struct Object
-{
-	int kind;
-	double radius;
-};
-
-struct sector
-{
-	int min_x, max_x;
-	int min_z, max_z;
-	Object array[100];
-};
+#include "struct.h"
+#include "Protocol_type.h"
 
 #pragma pack (push, 1)
 // Game Logic Server 
@@ -97,8 +87,8 @@ struct cs_packet_login
 {
 	int packet_size;
 	BYTE packet_type;
-	char ID[20];
-	char Password[20];
+	//char ID[20];
+	//char Password[20];
 };
 struct cs_packet_create_room
 {

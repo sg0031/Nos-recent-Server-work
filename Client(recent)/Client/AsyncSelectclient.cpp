@@ -77,13 +77,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM IParam)
 
 		for (int p = 0; p < 8; ++p)
 		{
-
 			Rectangle(hdc,
-				s->Player[p].P_x,
-				s->Player[p].P_y,
-				s->Player[p].P_x + 20,
-				s->Player[p].P_y + 20);
-
+				s->Player[p].getPlayer_Position().x,
+				s->Player[p].getPlayer_Position().y,
+				s->Player[p].getPlayer_Position().x + 20,
+				s->Player[p].getPlayer_Position().y + 20);
 		}
 
 		//for (int i = 0; i < 8; ++i)
