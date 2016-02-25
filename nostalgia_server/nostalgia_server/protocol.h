@@ -1,135 +1,135 @@
 
-#include <Windows.h>
+
 #include <D3DX10Math.h>
 
 #include "struct.h"
-#include "protocol_type.h"
+#include "ProtocolType.h"
 
 #pragma pack (push, 1)
 // Game Logic Server 
 // SC_Packet
-struct sc_packet_move
+struct ScPacketMove
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 	int id;
 	D3DXVECTOR3 position;
 };
-struct sc_packet_sector
+struct ScPacketSector
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 	int id;
-	sector area[9];
+	Sector area[9];
 };
-struct sc_packet_monster_roaming
+struct ScPacketMonsterRoaming
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 	int kind;
 	D3DXVECTOR3 position;
 };
 //  CS_Packet
-struct cs_packet_move
+struct CsPacketMove
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 	int id;
 	D3DXVECTOR3 direction;
 	D3DXVECTOR3 position;
 };
-struct cs_packet_attack
+struct CsPacketAttack
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 	int id;
 	//이때 충돌체크 여부 판별
 };
-struct cs_packet_use_skill
+struct CsPacketUseSkill
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 	int id;
-	char keyboard_skill;
+	char keyboardSkill;
 };
-struct cs_packet_use_item
+struct CsPacketUseItem
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 	int id;
-	int item_num;
+	int itemNum;
 };
 //		Login & Lobby Server
 
 //		SC_Packet
-struct sc_packet_login
+struct ScPacketLogin
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 	int id;
 };
 
-struct sc_packet_ready_player
+struct ScPacketReadyPlayer
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 	int id;
 };
 
-struct sc_packet_room_list
+struct ScPacketRoomList
 {
-	int packet_size;
-	BYTE packet_type;
-	int room_num;
+	int packetSize;
+	BYTE packetType;
+	int roomNum;
 };
 //  CS_Packet
 
-struct cs_packet_login
+struct CsPacketLogin
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 	//char ID[20];
 	//char Password[20];
 };
-struct cs_packet_create_room
+struct CsPacketCreateRoom
 {
-	int packet_size;
-	BYTE packet_type;
-	BYTE limit_player_num;
+	int packetSize;
+	BYTE packetType;
+	BYTE limitPlayerNum;
 };
-struct cs_packet_input_ready
+struct CsPacketInputReady
 {
-	int packet_size;
-	BYTE packet_type;
-	int room_num;
+	int packetSize;
+	BYTE packetType;
+	int roomNum;
 };
-struct cs_packet_input_start
+struct CsPacketInputStart
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 };
-struct cs_packet_invite_shop
+struct CsPacketInviteShop
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 };
-struct cs_packet_buy_portion
+struct CsPacketBuyPortion
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 	int amount;
 };
-struct cs_packet_register_portion
+struct CsPacketRegisterPortion
 {
-	int packet_size;
-	BYTE packet_type;
-	char keyboard_s;
-	char keyboard_d;
+	int packetSize;
+	BYTE packetType;
+	char keyboardS;
+	char keyboardD;
 };
-struct cs_packet_select_character
+struct CsPacketSelectCharacter
 {
-	int packet_size;
-	BYTE packet_type;
+	int packetSize;
+	BYTE packetType;
 };
 //	Server->DB Server
 
@@ -165,7 +165,7 @@ struct cs_packet_select_character
 //
 //#pragma pack (push, 1)
 ////서버 -> 클라
-//struct sc_packet_move
+//struct ScPacketMove
 //{
 //	BYTE size;
 //	BYTE type;
@@ -185,7 +185,7 @@ struct cs_packet_select_character
 //
 //
 ////클라 -> 서버
-//struct cs_packet_move
+//struct CsPacketMove
 //{
 //	BYTE size;
 //	BYTE type;

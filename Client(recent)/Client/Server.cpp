@@ -8,14 +8,14 @@ Server::~Server()
 {
 
 }
-void Server::setSocket_HWND(HWND s){
-	Socket_HWND = s;
+void Server::setSocketHWND(HWND s){
+	socketHWND = s;
 }
 void Server::setHINSTANCE(HINSTANCE g)
 {
-	g_hInst = g;
+	ghInst = g;
 }
-int Server::socketinit()
+int Server::socketInit()
 {
 	WSADATA wsa;
 	int ret = 0;
@@ -34,57 +34,58 @@ int Server::socketinit()
 
 	ret = WSAConnect(sock, (SOCKADDR*)&addr, sizeof(addr), NULL, NULL, NULL, NULL);
 
-	WSAAsyncSelect(sock, Socket_HWND, WM_SOCKET, FD_READ | FD_CLOSE);
+	WSAAsyncSelect(sock, socketHWND, WM_SOCKET, FD_READ | FD_CLOSE);
 
-	WSA_send_buf.buf = Send_buf;
-	WSA_send_buf.len = MAX_SIZE;
-	WSA_recv_buf.buf = Recv_buf;
-	WSA_recv_buf.len = MAX_SIZE;
+	wsaSendBuf.buf = sendBuf;
+	wsaSendBuf.len = MAX_SIZE;
+	wsaRecvBuf.buf = recvBuf;
+	wsaRecvBuf.len = MAX_SIZE;
 
 	DWORD iobyte;
 
-	cs_packet_login *login =
-		reinterpret_cast<cs_packet_login*>(Send_buf);
-	login->packet_size = sizeof(cs_packet_login);
-	login->packet_type = CS_LOGIN_REQUEST;
+	CsPacketLogin *login =
+		reinterpret_cast<CsPacketLogin*>(sendBuf);
+	login->packetSize = sizeof(CsPacketLogin);
+	login->packetType = CS_LOGIN_REQUEST;
 
-	ret = WSASend(sock, &WSA_send_buf, 1, &iobyte, 0, NULL, NULL);
+	ret = WSASend(sock, &wsaSendBuf, 1, &iobyte, 0, NULL, NULL);
 	//cout << iobyte << endl;
 	if (ret == SOCKET_ERROR)
 		cout << "WSASend Error" << endl;
-
+	cout << "로그인 요청" << endl;
 	return 1;
 }
-void Server::KeyDown(WPARAM wParam)
+void Server::keyDown(WPARAM wParam)
 {
 	int retval = 0;
-	D3DXVECTOR3 player_dircetion;
+	D3DXVECTOR3 playerDircetion;
 	DWORD iobyte;
 	DWORD ioflag = 0;
 
 	if (wParam == VK_UP)
 	{
-		player_dircetion = D3DXVECTOR3(0, 0, 1);
+		playerDircetion = D3DXVECTOR3(0, 0, 1);
 	}
 	if (wParam == VK_DOWN)
 	{
-		player_dircetion = D3DXVECTOR3(0, 0, -1);
+		playerDircetion = D3DXVECTOR3(0, 0, -1);
 	}
 	if (wParam == VK_LEFT)
 	{
-		player_dircetion = D3DXVECTOR3(-1, 0, 0);
+		playerDircetion = D3DXVECTOR3(-1, 0, 0);
 	}
 	if (wParam == VK_RIGHT)
 	{
-		player_dircetion = D3DXVECTOR3(1, 0, 0);
+		playerDircetion = D3DXVECTOR3(1, 0, 0);
 	}
 
-	cs_packet_move *my_packet = reinterpret_cast<cs_packet_move*>(Send_buf);
-	my_packet->packet_size = sizeof(my_packet);
-	WSA_send_buf.len = sizeof(my_packet);
-	my_packet->direction = player_dircetion;
+	CsPacketMove *myPacket = reinterpret_cast<CsPacketMove*>(sendBuf);
+	myPacket->packetType = CS_MOVE;
+	myPacket->packetSize = sizeof(myPacket);
+	wsaSendBuf.len = sizeof(myPacket);
+	myPacket->direction = playerDircetion;
 
-	retval = WSASend(sock, &WSA_send_buf, 1, &iobyte, ioflag, NULL, NULL);
+	retval = WSASend(sock, &wsaSendBuf, 1, &iobyte, ioflag, NULL, NULL);
 	//cout << iobyte << endl;
 	if (retval == SOCKET_ERROR)
 	{
@@ -93,98 +94,94 @@ void Server::KeyDown(WPARAM wParam)
 	}
 
 }
-void Server::ReadPacket()
+void Server::readPacket()
 {
 	DWORD iobyte, ioflag = 0;
 
-	int ret = WSARecv(sock, &WSA_recv_buf, 1, &iobyte, &ioflag, NULL, NULL);
+	int ret = WSARecv(sock, &wsaRecvBuf, 1, &iobyte, &ioflag, NULL, NULL);
 	if (ret != 0)
 	{
 		int err_code = WSAGetLastError();
 		cout << "Recv Error : " << err_code << endl;
 	}
 	cout << "recv" << endl;
-	BYTE *ptr = reinterpret_cast<BYTE*>(Recv_buf);
+	BYTE *ptr = reinterpret_cast<BYTE*>(recvBuf);
 
 	while (0 != iobyte)
 	{
-		if (in_packet_size == 0)
+		if (inPacketSize == 0)
 		{
-			in_packet_size = ptr[0];
+			inPacketSize = ptr[0];
 		}
 
-		if (iobyte + save_packet_size >= in_packet_size)
+		if (iobyte + savePacketSize >= inPacketSize)
 		{
-			memcpy(Complete_buf + save_packet_size,
+			memcpy(completeBuf + savePacketSize,
 				ptr,
-				in_packet_size - save_packet_size);
+				inPacketSize - savePacketSize);
 
-			ProcessPacket(Complete_buf);
+			processPacket(completeBuf);
 
-			ptr += in_packet_size - save_packet_size;
-			iobyte -= in_packet_size - save_packet_size;
-			in_packet_size = 0;
-			save_packet_size = 0;
+			ptr += inPacketSize - savePacketSize;
+			iobyte -= inPacketSize - savePacketSize;
+			inPacketSize = 0;
+			savePacketSize = 0;
 		}
 		else
 		{
-			memcpy(Complete_buf + save_packet_size, ptr, iobyte);
-			save_packet_size += iobyte;
+			memcpy(completeBuf + savePacketSize, ptr, iobyte);
+			savePacketSize += iobyte;
 			iobyte = 0;
 		}
 
 	}
 }
 
-
-void Server::ProcessPacket(char* ptr)
+void Server::processPacket(char* ptr)
 {
 	//cout << "process" << endl;
 	switch (ptr[1])
 	{
-
 	case SC_LOGIN_SUCCESS:
-	{
-		sc_packet_login *p =
-			reinterpret_cast<sc_packet_login*>(ptr);
-		my_id = p->id;
-		//Player[my_id].P_id = my_id;
-		cout << "my_id : "<< my_id << endl;
+		ScPacketMove *p =
+			reinterpret_cast<ScPacketMove*>(ptr);
+		myId = p->id;
+		Player[myId].setPlayerID(myId);
+		cout << "myId : " << Player[myId].getPlayerID() << endl;
 		break;
-	}
 
 	case CS_MOVE:
-	{
+
 		cout << "pos" << endl;
-		sc_packet_move *p =
-			reinterpret_cast<sc_packet_move*>(ptr);
+		ScPacketMove *p =
+			reinterpret_cast<ScPacketMove*>(ptr);
 		//cout << p->id << "," << p->x << "," << p->y << endl;
-		Player[p->id].setPlayer_Position(p->position);
+		Player[p->id].setPlayerPosition(p->);
 		break;
-	}
+
 	case SC_MOVE_ERROR_CHECK:
-	{
+
 		cout << "이동 동기화 체크" << endl;
-		sc_packet_move *p = reinterpret_cast<sc_packet_move*>(ptr);
+		ScPacketMove *p = reinterpret_cast<ScPacketMove*>(ptr);
 		break;
-	}
+
 
 	}
 }
 
-void Server::SendPacket(SOCKET s, void* buf)
+void Server::sendPacket(SOCKET s, void* buf)
 {
 	SOCKET Send_socket = s;
 	int packet_size = reinterpret_cast<char*>(buf)[0];
-	memcpy(Complete_buf, buf, packet_size);
+	memcpy(completeBuf, buf, packet_size);
 
-	WSA_Complete_buf.buf = Complete_buf;
-	WSA_Complete_buf.len = packet_size;
+	wsaCompleteBuf.buf = completeBuf;
+	wsaCompleteBuf.len = packet_size;
 	DWORD iobyte;
-	WSASend(Send_socket, &WSA_Complete_buf, 1, &iobyte, 0, NULL, NULL);
+	WSASend(Send_socket, &wsaCompleteBuf, 1, &iobyte, 0, NULL, NULL);
 }
 
-int Server::GetMy_id()
+int Server::getMyId()
 {
-	return my_id;
+	return myId;
 }

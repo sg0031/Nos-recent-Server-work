@@ -10,13 +10,13 @@ Player::Player()
 	id = -1;
 	play = false;
 
-	over_ex.s = NULL;
-	over_ex.operationtype = Recvtype;
-	over_ex.prevsize = 0;
-	over_ex.currentsize = 0;
-	over_ex.buf.buf = over_ex.iocpbuf;
-	over_ex.buf.len = sizeof(over_ex.iocpbuf);
-	ZeroMemory(&over_ex.Overlapped, sizeof(over_ex.Overlapped));
+	overEx.s = NULL;
+	overEx.operationType = Recvtype;
+	overEx.prevSize = 0;
+	overEx.currentSize = 0;
+	overEx.buf.buf = overEx.iocpBuf;
+	overEx.buf.len = sizeof(overEx.iocpBuf);
+	ZeroMemory(&overEx.overLapped, sizeof(overEx.overLapped));
 }
 
 
@@ -28,12 +28,12 @@ bool Player::getPlay()
 {
 	return play;
 }
-D3DXVECTOR3 Player::getPlayer_Position()
+D3DXVECTOR3 Player::getPlayerPosition()
 {
 	return position;
 }
 
-D3DXVECTOR3 Player::getPlayer_Direction()
+D3DXVECTOR3 Player::getPlayerDirection()
 {
 	return direction;
 }
@@ -41,30 +41,30 @@ int Player::getPlayerID()
 {
 	return id;
 }
-double Player::getPlayer_velocity()
+double Player::getPlayerVelocity()
 {
 	return velocity;
 }
 
 
 
-void Player::setPlayer_velocity(double velocity)
+void Player::setPlayerVelocity(double velocity)
 {
 	this->velocity = velocity;
 }
 void Player::setPlay(bool p)
 {
-	Play = p;
+	play = p;
 }
 void Player::setPlayerID(int id)
 {
-	Player_id = id;
+	this->id = id;
 }
-void Player::setPlayer_Position(D3DXVECTOR3 position)
+void Player::setPlayerPosition(D3DXVECTOR3 position)
 {
 	this->position = position;
 }
-void Player::setPlayer_Direction(D3DXVECTOR3 direction)
+void Player::setPlayerDirection(D3DXVECTOR3 direction)
 {
 	this->direction = direction;
 }

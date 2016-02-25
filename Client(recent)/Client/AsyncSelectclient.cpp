@@ -11,7 +11,7 @@ using namespace std;
 Server *s = Server::getInstangce();
 
 
-HINSTANCE g_hInst;
+HINSTANCE ghInst;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM IParam);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpszCmdParam, int nCmdShow)
@@ -19,7 +19,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpszCmdPa
 	HWND hWnd;
 	MSG Message;
 	WNDCLASS WndClass;
-	g_hInst = hInstance;
+	ghInst = hInstance;
 	s->setHINSTANCE(hInstance);
 
 	WndClass.cbClsExtra = 0;
@@ -41,8 +41,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpszCmdPa
 	UpdateWindow(hWnd);
 
 
-	s->setSocket_HWND(hWnd);
-	s->socketinit();
+	s->setSocketHWND(hWnd);
+	s->socketInit();
 
 	while (GetMessage(&Message, 0, 0, 0))
 	{
@@ -65,7 +65,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM IParam)
 		SetTimer(hWnd, 1, 100, NULL);
 		break;
 	case WM_KEYDOWN:
-		s->KeyDown(wParam);
+		s->keyDown(wParam);
 		break;
 	case WM_TIMER:
 		InvalidateRect(hWnd, NULL, TRUE);
@@ -77,11 +77,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM IParam)
 
 		for (int p = 0; p < 8; ++p)
 		{
-			Rectangle(hdc,
-				s->Player[p].getPlayer_Position().x,
-				s->Player[p].getPlayer_Position().y,
-				s->Player[p].getPlayer_Position().x + 20,
-				s->Player[p].getPlayer_Position().y + 20);
+			if(s->Player[p].getPlay()==true)
+				Rectangle(hdc,
+					s->Player[p].getPlayerPosition().x,
+					s->Player[p].getPlayerPosition().z,
+					s->Player[p].getPlayerPosition().x + 20,
+					s->Player[p].getPlayerPosition().z + 20);
 		}
 
 		//for (int i = 0; i < 8; ++i)
@@ -104,7 +105,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM IParam)
 		}
 		switch (WSAGETSELECTEVENT(IParam)) {
 		case FD_READ:
-			s->ReadPacket();
+			s->readPacket();
 		//	InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		case FD_CLOSE:

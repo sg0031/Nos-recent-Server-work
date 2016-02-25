@@ -1,6 +1,5 @@
 #pragma once
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#include<WinSock2.h>
 #include<iostream>
 #include<time.h>
 #include"Player.h"
@@ -12,26 +11,26 @@ using namespace std;
 
 class Server
 {
-	HWND Socket_HWND;
-	HINSTANCE g_hInst;
+	HWND socketHWND;
+	HINSTANCE ghInst;
 
 
 	SOCKET sock;
-	WSABUF WSA_send_buf;
-	char Send_buf[MAX_SIZE];
-	WSABUF WSA_recv_buf;
-	char Recv_buf[MAX_SIZE];
-	WSABUF WSA_Complete_buf;
-	char Complete_buf[MAX_SIZE];
-	int in_packet_size;
-	int save_packet_size;
+	WSABUF wsaSendBuf;
+	char sendBuf[MAX_SIZE];
+	WSABUF wsaRecvBuf;
+	char recvBuf[MAX_SIZE];
+	WSABUF wsaCompleteBuf;
+	char completeBuf[MAX_SIZE];
+	int inPacketSize;
+	int savePacketSize;
 
-	int my_id;
+	int myId;
 public:
 	Player Player[8];
 	LPCTSTR IpszClass = "Test Client";
 //--------------------------------------------
-	void setSocket_HWND(HWND s);
+	void setSocketHWND(HWND s);
 	void setHINSTANCE(HINSTANCE g);
 //--------------------------------------
 	static Server* getInstangce()
@@ -41,13 +40,13 @@ public:
 	}
 //---------------------------------------
 	Server();
-	int socketinit(); 
-	void ReadPacket();
+	int socketInit(); 
+	void readPacket();
 
-	void ProcessPacket(char* buf);
-	void SendPacket(SOCKET s, void* buf);
-	void KeyDown(WPARAM wParam);
-	int GetMy_id();
+	void processPacket(char* buf);
+	void sendPacket(SOCKET s, void* buf);
+	void keyDown(WPARAM wParam);
+	int getMyId();
 	~Server();
 };
 

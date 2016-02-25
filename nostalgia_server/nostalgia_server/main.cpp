@@ -1,6 +1,6 @@
-#include "Logic_Server.h"
+#include "LogicServer.h"
 
 int main()
 {
-	Logic_Server s;
+	LogicServer s;
 }

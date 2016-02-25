@@ -21,10 +21,10 @@
     <ClInclude Include="struct.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="protocol_type.h">
+    <ClInclude Include="LogicServer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Logic_Server.h">
+    <ClInclude Include="ProtocolType.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -32,7 +32,7 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Logic_Server.cpp">
+    <ClCompile Include="LogicServer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

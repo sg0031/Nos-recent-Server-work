@@ -1,49 +1,50 @@
-
+#include <WinSock2.h>
 #pragma pack (push, 1)
 enum
 {
 	Sendtype = 1,
 	Recvtype = 2
 };
-struct Over_ex	//오버렙트구조체 확장
+struct OverEx//오버렙트구조체 확장
 {
-	OVERLAPPED Overlapped;
+	OVERLAPPED overLapped;
 	SOCKET s;
-	int operationtype;	//패킷의 타입
-	int prevsize;	//이전데이타 크기
-	int currentsize;//현재데이타 크기
+	int operationType;	//패킷의 타입
+	int prevSize;	//이전데이타 크기
+	int currentSize;//현재데이타 크기
 	WSABUF buf;
-	char Packetbuf[255];
-	char iocpbuf[4000];
+	char packetBuf[255];
+	char iocpBuf[4000];
 };
 struct Object
 {
 	int kind;
 	double radius;
 };
-struct sector
+struct Sector
 {
-	int min_x, max_x;
-	int min_z, max_z;
+	int minX, maxX;
+	int minZ, maxZ;
 	Object array[100];
 };
-struct room_info
+
+struct RoomInfo
 {
-	int room_num;
-	Player max_player[4];
+	int roomNum;
+//	PlayerInfo maxPlayer[4];
 };
-struct monster
+struct Monster
 {
-	int monster_type;
+	int monsterType;
 	int attack;
 	int health;
 	int defence;
-	double monster_x, monster_z;
-	double monster_velocity;
-	monster()
+	double monsterX, monsterZ;
+	double monsterVelocity;
+	Monster()
 	{
-		monster_type = rand() % 4;
-		if (monster_type == 0)
+		monsterType = rand() % 4;
+		if (monsterType == 0)
 		{
 			attack = 20;
 			defence = 20;
