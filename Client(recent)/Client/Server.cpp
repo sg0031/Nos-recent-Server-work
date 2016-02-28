@@ -82,6 +82,7 @@ void Server::keyDown(WPARAM wParam)
 	CsPacketMove *myPacket = reinterpret_cast<CsPacketMove*>(sendBuf);
 	myPacket->packetType = CS_MOVE;
 	myPacket->packetSize = sizeof(myPacket);
+	wsaSendBuf.buf = sendBuf;
 	wsaSendBuf.len = sizeof(myPacket);
 	myPacket->direction = playerDircetion;
 
@@ -105,7 +106,7 @@ void Server::readPacket()
 		cout << "Recv Error : " << err_code << endl;
 	}
 	cout << "recv" << endl;
-	BYTE *ptr = reinterpret_cast<BYTE*>(recvBuf);
+	int *ptr = reinterpret_cast<int*>(recvBuf);
 
 	while (0 != iobyte)
 	{
@@ -139,32 +140,34 @@ void Server::readPacket()
 
 void Server::processPacket(char* ptr)
 {
+	BYTE *header = reinterpret_cast<BYTE*>(ptr + 4);
 	//cout << "process" << endl;
-	switch (ptr[1])
+	switch (*header)
 	{
 	case SC_LOGIN_SUCCESS:
-		ScPacketMove *p =
+	{
+		ScPacketMove *login =
 			reinterpret_cast<ScPacketMove*>(ptr);
-		myId = p->id;
+		myId = login->id;
 		Player[myId].setPlayerID(myId);
 		cout << "myId : " << Player[myId].getPlayerID() << endl;
 		break;
-
+	}
 	case CS_MOVE:
-
+	{
 		cout << "pos" << endl;
-		ScPacketMove *p =
+		ScPacketMove *move =
 			reinterpret_cast<ScPacketMove*>(ptr);
 		//cout << p->id << "," << p->x << "," << p->y << endl;
-		Player[p->id].setPlayerPosition(p->);
+		Player[move->id].setPlayerPosition(move->position);
 		break;
-
+	}
 	case SC_MOVE_ERROR_CHECK:
-
+	{
 		cout << "이동 동기화 체크" << endl;
-		ScPacketMove *p = reinterpret_cast<ScPacketMove*>(ptr);
+		ScPacketMove *check = reinterpret_cast<ScPacketMove*>(ptr);
 		break;
-
+	}
 
 	}
 }

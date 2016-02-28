@@ -91,6 +91,8 @@ void LogicServer::acceptThread()
 			cout << "클라이언트 소켓 에러" << endl;
 
 		player[id].overEx.s = clientSock;
+		//player[id].overEx.buf.buf = player[id].overEx.packetBuf;
+		//player[id].overEx.buf.len = sizeof(player[id].overEx.packetBuf);
 
 		CreateIoCompletionPort((HANDLE)clientSock, io, id, 0);
 		cout << id << "접속" << endl;
@@ -178,15 +180,15 @@ void LogicServer::processPacket(int id, char *ptr)
 {
 	//cout << "processPacket 진입" << endl;
 	//cout <<"id : "<< id << endl;
-	switch (ptr[1])
+	BYTE *header = reinterpret_cast<BYTE*>(ptr + 4);
+	switch (*header)
 	{
 	case CS_LOGIN_REQUEST:
+	{
 		cout << "로그인 요청" << endl;
 		cout << "id : " << id << endl;
-
 		player[id].id = id;
 		player[id].play = true;
-
 		ScPacketMove login;
 		login.packetSize = sizeof(ScPacketMove);
 		login.packetType = SC_LOGIN_SUCCESS;
@@ -194,17 +196,19 @@ void LogicServer::processPacket(int id, char *ptr)
 		sendPacket(id, &login);
 		cout << "로그인" << endl;
 		break;
-
+	}
 	case CS_MOVE:
+	{
 		player[id].playerPosition = player[id].playerPosition +
 			(player[id].playerVelocity * player[id].playerDirection);
-		ScPacketMove packet;
-		packet.packetSize = sizeof(ScPacketMove);
-		packet.id = player[id].id;
-		packet.packetType = SC_MOVE_ERROR_CHECK;
-		packet.position = player[id].playerPosition;
-		sendPacket(id, &packet);
+		//ScPacketMove packet;
+		//packet.packetSize = sizeof(ScPacketMove);
+		//packet.id = player[id].id;
+		//packet.packetType = SC_MOVE_ERROR_CHECK;
+		//packet.position = player[id].playerPosition;
+		//sendPacket(id, &packet);
 		break;
+	}
 	}
 
 	//매번 플레이어들의 위치값 갱신
@@ -216,7 +220,7 @@ void LogicServer::processPacket(int id, char *ptr)
 			ScPacketMove packet;
 			packet.packetSize = sizeof(ScPacketMove);
 			packet.id = player[i].id;
-			packet.packetType = SC_MOVE;
+			packet.packetType = SC_MOVE_POSITION;
 			packet.position = player[i].playerPosition;
 			sendPacket(id, &packet);
 		}
