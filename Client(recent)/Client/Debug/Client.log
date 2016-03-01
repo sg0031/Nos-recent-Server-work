@@ -47,5 +47,5 @@ c:\program files (x86)\microsoft directx sdk (june 2010)\include\d3d10.h(608): w
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50445): note: 'D3D10_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS'의 이전 정의를 참조하십시오.
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\d3d10.h(609): warning C4005: 'D3D10_ERROR_FILE_NOT_FOUND': 매크로 재정의
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50454): note: 'D3D10_ERROR_FILE_NOT_FOUND'의 이전 정의를 참조하십시오.
-e:\nos\nos-recent-server-work\client(recent)\client\server.cpp(118): warning C4018: '>=': signed 또는 unsigned가 일치하지 않습니다.
+e:\nos\nos-recent-server-work\client(recent)\client\server.cpp(108): warning C4018: '>=': signed 또는 unsigned가 일치하지 않습니다.
   Client.vcxproj -> E:\Nos\Nos-recent-Server-work\Client(recent)\Debug\Client.exe

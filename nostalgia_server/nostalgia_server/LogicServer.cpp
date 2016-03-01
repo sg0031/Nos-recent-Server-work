@@ -3,11 +3,18 @@
 
 HANDLE LogicServer::io = NULL;	//빈 포트 생성
 int LogicServer::id = 0;
-PlayerInfo LogicServer::player[4];
+PlayerInfo LogicServer::player[ROOM_MAX_PLAYER];
+priority_queue<FIFO, vector<FIFO>, Standard> LogicServer::playerID;
 
 LogicServer::LogicServer()
 {
-
+	FIFO init;
+	for (int i = 0; i < ROOM_MAX_PLAYER; ++i)
+	{
+		init.data = i;
+		init.turn = i;
+		playerID.push(init);
+	}
 	srand((unsigned)time(NULL));
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
@@ -49,7 +56,7 @@ LogicServer::~LogicServer()
 
 void LogicServer::acceptThread()
 {
-	cout << "시작" << endl;
+	cout << "ServerInit" << endl;
 
 	SOCKET listenSock;
 	SOCKADDR_IN  addr;
@@ -83,26 +90,33 @@ void LogicServer::acceptThread()
 
 	while (1)
 	{
+		int count = 0;
 		int len = sizeof(clientAddr);
 		clientSock = WSAAccept(listenSock, (SOCKADDR*)&clientAddr,
 			&len, NULL, NULL);
 
 		if (clientSock == INVALID_SOCKET)
-			cout << "클라이언트 소켓 에러" << endl;
+			cout << "Client Socket Error" << endl;
 
-		player[id].overEx.s = clientSock;
-		//player[id].overEx.buf.buf = player[id].overEx.packetBuf;
-		//player[id].overEx.buf.len = sizeof(player[id].overEx.packetBuf);
-
-		CreateIoCompletionPort((HANDLE)clientSock, io, id, 0);
-		cout << id << "접속" << endl;
+		for (int i = 0; i < ROOM_MAX_PLAYER; ++i)
+		{
+			if (player[i].play == false)
+			{
+				player[i].overEx.s = clientSock;
+				//player[i].overEx.buf.buf = player[i].overEx.packetBuf;
+				//player[i].overEx.buf.len = sizeof(player[i].overEx.packetBuf);
+				count = i;
+				break;
+			}
+		}
+		CreateIoCompletionPort((HANDLE)clientSock, io, count, 0);
+	//	cout << id << "명 접속" << endl;
 
 		unsigned long recvflag = 0;
-		WSARecv(clientSock, &player[id].overEx.buf,
+		WSARecv(clientSock, &player[count].overEx.buf,
 			1, NULL, &recvflag,
-			(LPOVERLAPPED)&player[id].overEx.overLapped, NULL);
-		//클라이언트별 개별 아이디 부여
-		id++;
+			(LPOVERLAPPED)&player[count].overEx.overLapped, NULL);
+		cout << count << endl;
 	}
 }
 void LogicServer::lobbyThread()
@@ -181,24 +195,31 @@ void LogicServer::processPacket(int id, char *ptr)
 	//cout << "processPacket 진입" << endl;
 	//cout <<"id : "<< id << endl;
 	BYTE *header = reinterpret_cast<BYTE*>(ptr + 4);
+	FIFO idAllot;
 	switch (*header)
 	{
 	case CS_LOGIN_REQUEST:
 	{
-		cout << "로그인 요청" << endl;
-		cout << "id : " << id << endl;
-		player[id].id = id;
+		cout << "Login Accept" << endl;
+		idAllot = playerID.top();
+		playerID.pop();
+		player[id].id = idAllot.data;
 		player[id].play = true;
+		cout << "id : " << player[id].id << endl;
 		ScPacketMove login;
 		login.packetSize = sizeof(ScPacketMove);
 		login.packetType = SC_LOGIN_SUCCESS;
+		login.id = player[id].id;
 		login.position = player[id].playerPosition;
 		sendPacket(id, &login);
-		cout << "로그인" << endl;
+		//cout << "로그인" << endl;
 		break;
 	}
 	case CS_MOVE:
 	{
+		CsPacketMove *movePacket = reinterpret_cast<CsPacketMove*>(ptr);
+		player[id].playerDirection = movePacket->direction;
+
 		player[id].playerPosition = player[id].playerPosition +
 			(player[id].playerVelocity * player[id].playerDirection);
 		//ScPacketMove packet;
@@ -216,7 +237,7 @@ void LogicServer::processPacket(int id, char *ptr)
 	{
 		if (player[i].play == true)
 		{
-			cout << "보냄" << endl;
+			cout << "Send Data" << endl;
 			ScPacketMove packet;
 			packet.packetSize = sizeof(ScPacketMove);
 			packet.id = player[i].id;
@@ -229,19 +250,19 @@ void LogicServer::processPacket(int id, char *ptr)
 void LogicServer::sendPacket(int client, void* packet)
 {
 	//	char* a = reinterpret_cast<char*>(packet);
-	int packetSize = reinterpret_cast<unsigned char*>(packet)[0];
+	int *packetSize = reinterpret_cast<int*>(packet);
 	OverEx *Send_Operation = new OverEx;
 	ZeroMemory(Send_Operation, sizeof(OverEx));
 
 	Send_Operation->operationType = Sendtype;
 
 	Send_Operation->buf.buf = Send_Operation->packetBuf;
-	Send_Operation->buf.len = packetSize;
+	Send_Operation->buf.len = *packetSize;
 
 	//	ScPacketMove *b = reinterpret_cast<ScPacketMove*>(packet);
 	//	char *c = reinterpret_cast<char*>(packet);
 
-	memcpy(Send_Operation->packetBuf, reinterpret_cast<char*>(packet), packetSize);
+	memcpy(Send_Operation->packetBuf, reinterpret_cast<char*>(packet), *packetSize);
 
 	//	ScPacketMove *p = reinterpret_cast<ScPacketMove*>(Send_Operation->Packetbuf);
 	//	cout << "id:" << p->id<<"x :"<<p->x << "type:" << static_cast<char>(p->type) << endl;
@@ -252,7 +273,6 @@ void LogicServer::sendPacket(int client, void* packet)
 		&iobyte, 0, &Send_Operation->overLapped, NULL);
 	if (retval != 0)
 		cout << "error sendpacket" << endl;
-	cout << client << "정보 Send" << endl;
-
+	cout << client << "data Send" << endl;
 
 }

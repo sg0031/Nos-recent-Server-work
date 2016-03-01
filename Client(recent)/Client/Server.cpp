@@ -2,7 +2,8 @@
 
 Server::Server()
 {
-
+	myId = 0;
+	count = 0;
 }
 Server::~Server()
 {
@@ -48,27 +49,25 @@ int Server::socketInit()
 	login->packetSize = sizeof(CsPacketLogin);
 	login->packetType = CS_LOGIN_REQUEST;
 
+
 	ret = WSASend(sock, &wsaSendBuf, 1, &iobyte, 0, NULL, NULL);
 	//cout << iobyte << endl;
 	if (ret == SOCKET_ERROR)
 		cout << "WSASend Error" << endl;
-	cout << "로그인 요청" << endl;
+	cout << "Login Request" << endl;
 	return 1;
 }
 void Server::keyDown(WPARAM wParam)
 {
-	int retval = 0;
 	D3DXVECTOR3 playerDircetion;
-	DWORD iobyte;
-	DWORD ioflag = 0;
 
 	if (wParam == VK_UP)
 	{
-		playerDircetion = D3DXVECTOR3(0, 0, 1);
+		playerDircetion = D3DXVECTOR3(0, 0, -1);
 	}
 	if (wParam == VK_DOWN)
 	{
-		playerDircetion = D3DXVECTOR3(0, 0, -1);
+		playerDircetion = D3DXVECTOR3(0, 0, 1);
 	}
 	if (wParam == VK_LEFT)
 	{
@@ -79,20 +78,11 @@ void Server::keyDown(WPARAM wParam)
 		playerDircetion = D3DXVECTOR3(1, 0, 0);
 	}
 
-	CsPacketMove *myPacket = reinterpret_cast<CsPacketMove*>(sendBuf);
-	myPacket->packetType = CS_MOVE;
-	myPacket->packetSize = sizeof(myPacket);
-	wsaSendBuf.buf = sendBuf;
-	wsaSendBuf.len = sizeof(myPacket);
-	myPacket->direction = playerDircetion;
-
-	retval = WSASend(sock, &wsaSendBuf, 1, &iobyte, ioflag, NULL, NULL);
-	//cout << iobyte << endl;
-	if (retval == SOCKET_ERROR)
-	{
-		cout << "WSASend() x Error" << endl;
-		cout << WSAGetLastError() << endl;
-	}
+	CsPacketMove myPacket;
+	myPacket.packetSize = sizeof(CsPacketMove);
+	myPacket.packetType = CS_MOVE;
+	myPacket.direction = playerDircetion;
+	sendPacket(sock, &myPacket);
 
 }
 void Server::readPacket()
@@ -134,7 +124,6 @@ void Server::readPacket()
 			savePacketSize += iobyte;
 			iobyte = 0;
 		}
-
 	}
 }
 
@@ -150,16 +139,30 @@ void Server::processPacket(char* ptr)
 			reinterpret_cast<ScPacketMove*>(ptr);
 		myId = login->id;
 		Player[myId].setPlayerID(myId);
+		Player[myId].setPlay(true);
 		cout << "myId : " << Player[myId].getPlayerID() << endl;
 		break;
 	}
-	case CS_MOVE:
+	case SC_MOVE_POSITION:
 	{
-		cout << "pos" << endl;
+		cout << "movePacket" << endl;
 		ScPacketMove *move =
 			reinterpret_cast<ScPacketMove*>(ptr);
 		//cout << p->id << "," << p->x << "," << p->y << endl;
-		Player[move->id].setPlayerPosition(move->position);
+		for (int i = 0; i < ROOM_MAX_PLAYER; ++i)
+		{
+			if (Player[i].getPlayerID() < 0)
+			{
+				Player[i].setPlayerID(move->id);
+				Player[i].setPlayerPosition(move->position);
+				break;
+			}
+			if (Player[i].getPlayerID() == move->id)
+			{
+				Player[i].setPlayerPosition(move->position);
+			}
+		}
+		//Player[move->id].setPlayerPosition(move->position);
 		break;
 	}
 	case SC_MOVE_ERROR_CHECK:
@@ -168,20 +171,33 @@ void Server::processPacket(char* ptr)
 		ScPacketMove *check = reinterpret_cast<ScPacketMove*>(ptr);
 		break;
 	}
-
 	}
 }
 
 void Server::sendPacket(SOCKET s, void* buf)
 {
-	SOCKET Send_socket = s;
-	int packet_size = reinterpret_cast<char*>(buf)[0];
-	memcpy(completeBuf, buf, packet_size);
-
-	wsaCompleteBuf.buf = completeBuf;
-	wsaCompleteBuf.len = packet_size;
 	DWORD iobyte;
-	WSASend(Send_socket, &wsaCompleteBuf, 1, &iobyte, 0, NULL, NULL);
+	DWORD ioflag = 0;
+	SOCKET Send_socket = s;
+	int *packet_size = reinterpret_cast<int*>(buf);
+	OverEx *Send_Operation = new OverEx;
+	ZeroMemory(Send_Operation, sizeof(OverEx));
+	
+	Send_Operation->buf.buf = Send_Operation->packetBuf;
+	Send_Operation->buf.len = *packet_size;
+	//wsaCompleteBuf.buf = completeBuf;
+	//wsaCompleteBuf.len = packet_size;
+
+	memcpy(Send_Operation->packetBuf, reinterpret_cast<char*>(buf), *packet_size);
+
+	int retval = WSASend(Send_socket, &Send_Operation->buf, 1, &iobyte, 0, NULL, NULL);
+	//cout << iobyte << endl;
+	if (retval == SOCKET_ERROR)
+	{
+		cout << "WSASend() x Error" << endl;
+		cout << WSAGetLastError() << endl;
+	}
+	cout << "client data send" << endl;
 }
 
 int Server::getMyId()

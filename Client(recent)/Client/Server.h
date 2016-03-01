@@ -25,9 +25,10 @@ class Server
 	int inPacketSize;
 	int savePacketSize;
 
+	int count;
 	int myId;
 public:
-	Player Player[8];
+	Player Player[ROOM_MAX_PLAYER];
 	LPCTSTR IpszClass = "Test Client";
 //--------------------------------------------
 	void setSocketHWND(HWND s);

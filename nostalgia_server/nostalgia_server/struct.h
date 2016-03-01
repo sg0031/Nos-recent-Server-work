@@ -1,5 +1,17 @@
 #include <Windows.h>
 #pragma pack (push, 1)
+struct FIFO
+{
+	int data;
+	int turn;
+};
+struct Standard
+{
+	bool operator()(FIFO t, FIFO u)
+	{
+		return t.turn > u.turn;
+	}
+};
 enum
 {
 	Sendtype = 1,

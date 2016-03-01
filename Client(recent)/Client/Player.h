@@ -29,6 +29,7 @@ public:
 	D3DXVECTOR3 getPlayerDirection();
 	double getPlayerVelocity();
 	int getPlayerID();
+	SOCKET getPlayerSocket();
 
 	void setPlayerVelocity(double velocity);
 	void setPlay(bool p);

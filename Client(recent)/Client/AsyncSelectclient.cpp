@@ -75,7 +75,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM IParam)
 		hBrush = CreateSolidBrush(RGB(255, 255, 255));
 		oldBrush = (HBRUSH)SelectObject(hdc, hBrush);
 
-		for (int p = 0; p < 8; ++p)
+		for (int p = 0; p < ROOM_MAX_PLAYER; ++p)
 		{
 			if(s->Player[p].getPlay()==true)
 				Rectangle(hdc,

@@ -45,6 +45,10 @@ double Player::getPlayerVelocity()
 {
 	return velocity;
 }
+SOCKET Player::getPlayerSocket()
+{
+	return overEx.s;
+}
 
 
 

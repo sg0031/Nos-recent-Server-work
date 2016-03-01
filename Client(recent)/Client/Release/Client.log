@@ -1,0 +1,6 @@
+﻿  AsyncSelectclient.cpp
+e:\nos\nos-recent-server-work\client(recent)\client\Protocol.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'D3DX10Math.h': No such file or directory
+  Player.cpp
+e:\nos\nos-recent-server-work\client(recent)\client\Protocol.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'D3DX10Math.h': No such file or directory
+  Server.cpp
+e:\nos\nos-recent-server-work\client(recent)\client\Protocol.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'D3DX10Math.h': No such file or directory

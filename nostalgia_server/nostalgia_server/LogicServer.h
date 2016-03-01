@@ -2,6 +2,7 @@
 #include<iostream>
 #include<vector>
 #include<thread>
+#include<queue>
 #include<WinSock2.h>
 #include"protocol.h"
 using namespace std;
@@ -10,7 +11,8 @@ class LogicServer
 {
 	static HANDLE io;	//ºó Æ÷Æ® »ý¼º
 	static int id;
-	static PlayerInfo player[4];
+	static PlayerInfo player[ROOM_MAX_PLAYER];
+	static priority_queue<FIFO,vector<FIFO>,Standard> playerID;
 public:
 	LogicServer();
 	~LogicServer();
