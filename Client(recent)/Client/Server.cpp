@@ -51,7 +51,7 @@ int Server::socketInit()
 
 
 	ret = WSASend(sock, &wsaSendBuf, 1, &iobyte, 0, NULL, NULL);
-	//cout << iobyte << endl;
+	cout << iobyte << endl;
 	if (ret == SOCKET_ERROR)
 		cout << "WSASend Error" << endl;
 	cout << "Login Request" << endl;
@@ -95,8 +95,8 @@ void Server::readPacket()
 		int err_code = WSAGetLastError();
 		cout << "Recv Error : " << err_code << endl;
 	}
-	cout << "recv" << endl;
-	int *ptr = reinterpret_cast<int*>(recvBuf);
+	//cout << "recv" << endl;
+	char *ptr = reinterpret_cast<char*>(recvBuf);
 
 	while (0 != iobyte)
 	{

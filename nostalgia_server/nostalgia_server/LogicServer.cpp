@@ -113,7 +113,7 @@ void LogicServer::acceptThread()
 	//	cout << id << "¸í Á¢¼Ó" << endl;
 
 		unsigned long recvflag = 0;
-		WSARecv(clientSock, &player[count].overEx.buf,
+	int ret=WSARecv(clientSock, &player[count].overEx.buf,
 			1, NULL, &recvflag,
 			(LPOVERLAPPED)&player[count].overEx.overLapped, NULL);
 		cout << count << endl;
