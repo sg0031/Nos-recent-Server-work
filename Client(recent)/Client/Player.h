@@ -3,7 +3,7 @@
 
 class Player
 {
-	OverEx overEx;
+	OverEx* overEx;
 	int id;
 	int character_type;
 	D3DXVECTOR3 position;

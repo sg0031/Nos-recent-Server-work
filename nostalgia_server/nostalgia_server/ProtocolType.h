@@ -18,6 +18,7 @@ enum
 	SC_LOGIN_FAIL,
 	SC_READY,
 	SC_ROOM_LIST,
+	SC_PLAYER_LIST,
 
 	//ClientType
 	CS_MOVE=100,

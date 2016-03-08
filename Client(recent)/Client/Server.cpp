@@ -43,14 +43,14 @@ int Server::socketInit()
 	wsaRecvBuf.len = MAX_SIZE;
 
 	DWORD iobyte;
+	DWORD sendFlag=0;
 
 	CsPacketLogin *login =
 		reinterpret_cast<CsPacketLogin*>(sendBuf);
 	login->packetSize = sizeof(CsPacketLogin);
 	login->packetType = CS_LOGIN_REQUEST;
 
-
-	ret = WSASend(sock, &wsaSendBuf, 1, &iobyte, 0, NULL, NULL);
+	ret = WSASend(sock, &wsaSendBuf, 1, &iobyte, sendFlag, NULL, NULL);
 	cout << iobyte << endl;
 	if (ret == SOCKET_ERROR)
 		cout << "WSASend Error" << endl;
@@ -143,6 +143,21 @@ void Server::processPacket(char* ptr)
 		cout << "myId : " << Player[myId].getPlayerID() << endl;
 		break;
 	}
+	case SC_PLAYER_LIST:
+	{
+		ScPacketAcceptPlayerList *list =
+			reinterpret_cast<ScPacketAcceptPlayerList*>(ptr);
+		for (int i = 0; i < ROOM_MAX_PLAYER; ++i)
+		{
+			if (i==list->id)
+			{
+				Player[i].setPlayerID(list->id);
+				Player[i].setPlay(true);
+				Player[i].setPlayerPosition(list->position);
+			}
+		}
+		break;
+	}
 	case SC_MOVE_POSITION:
 	{
 		cout << "movePacket" << endl;
@@ -151,12 +166,6 @@ void Server::processPacket(char* ptr)
 		//cout << p->id << "," << p->x << "," << p->y << endl;
 		for (int i = 0; i < ROOM_MAX_PLAYER; ++i)
 		{
-			if (Player[i].getPlayerID() < 0)
-			{
-				Player[i].setPlayerID(move->id);
-				Player[i].setPlayerPosition(move->position);
-				break;
-			}
 			if (Player[i].getPlayerID() == move->id)
 			{
 				Player[i].setPlayerPosition(move->position);
@@ -165,6 +174,7 @@ void Server::processPacket(char* ptr)
 		//Player[move->id].setPlayerPosition(move->position);
 		break;
 	}
+
 	case SC_MOVE_ERROR_CHECK:
 	{
 		cout << "이동 동기화 체크" << endl;
@@ -185,12 +195,13 @@ void Server::sendPacket(SOCKET s, void* buf)
 	
 	Send_Operation->buf.buf = Send_Operation->packetBuf;
 	Send_Operation->buf.len = *packet_size;
+
 	//wsaCompleteBuf.buf = completeBuf;
 	//wsaCompleteBuf.len = packet_size;
 
 	memcpy(Send_Operation->packetBuf, reinterpret_cast<char*>(buf), *packet_size);
 
-	int retval = WSASend(Send_socket, &Send_Operation->buf, 1, &iobyte, 0, NULL, NULL);
+	int retval = WSASend(Send_socket, &Send_Operation->buf, 1, &iobyte, ioflag, NULL, NULL);
 	//cout << iobyte << endl;
 	if (retval == SOCKET_ERROR)
 	{

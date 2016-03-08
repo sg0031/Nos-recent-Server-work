@@ -12,7 +12,7 @@ struct Standard
 		return t.turn > u.turn;
 	}
 };
-enum
+enum EOperationType
 {
 	Sendtype = 1,
 	Recvtype = 2
@@ -21,7 +21,7 @@ struct OverEx	//오버렙트구조체 확장
 {
 	OVERLAPPED overLapped;
 	SOCKET s;
-	int operationType;	//패킷의 타입
+	EOperationType operationType;	//패킷의 타입
 	int prevSize;	//이전데이타 크기
 	int currentSize;//현재데이타 크기
 	WSABUF buf;
@@ -41,7 +41,7 @@ struct Sector
 };
 struct PlayerInfo
 {
-	OverEx overEx;
+	OverEx* overEx;
 	int id;
 	int characterType;
 	D3DXVECTOR3 playerPosition;
@@ -57,6 +57,7 @@ struct PlayerInfo
 	int theNumberOfPlayer;
 	double clearTime;
 	bool play;
+	bool acceptPlayer;
 	PlayerInfo()
 	{
 		playerPosition.x = (rand() % 60) * 10;
@@ -69,14 +70,18 @@ struct PlayerInfo
 		characterType = -1;
 		id = -1;
 		play = false;
+		acceptPlayer = false;
 
-		overEx.s = NULL;
-		overEx.operationType = Recvtype;
-		overEx.prevSize = 0;
-		overEx.currentSize = 0;
-		overEx.buf.buf = overEx.iocpBuf;
-		overEx.buf.len = sizeof(overEx.iocpBuf);
-		ZeroMemory(&overEx.overLapped, sizeof(overEx.overLapped));
+		overEx = new OverEx;
+		ZeroMemory(&overEx->iocpBuf, sizeof(overEx->iocpBuf));
+		ZeroMemory(&overEx->packetBuf, sizeof(overEx->packetBuf));
+		overEx->s = NULL;
+		overEx->operationType = Recvtype;
+		overEx->prevSize = 0;
+		overEx->currentSize = 0;
+		overEx->buf.buf = overEx->iocpBuf;
+		overEx->buf.len = sizeof(overEx->iocpBuf);
+		ZeroMemory(&overEx->overLapped, sizeof(overEx->overLapped));
 	}
 };
 

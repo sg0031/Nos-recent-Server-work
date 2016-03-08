@@ -10,13 +10,16 @@ Player::Player()
 	id = -1;
 	play = false;
 
-	overEx.s = NULL;
-	overEx.operationType = Recvtype;
-	overEx.prevSize = 0;
-	overEx.currentSize = 0;
-	overEx.buf.buf = overEx.iocpBuf;
-	overEx.buf.len = sizeof(overEx.iocpBuf);
-	ZeroMemory(&overEx.overLapped, sizeof(overEx.overLapped));
+	overEx = new OverEx;
+	ZeroMemory(&overEx->iocpBuf, sizeof(overEx->iocpBuf));
+	ZeroMemory(&overEx->packetBuf, sizeof(overEx->packetBuf));
+	overEx->s = NULL;
+	overEx->operationType = Recvtype;
+	overEx->prevSize = 0;
+	overEx->currentSize = 0;
+	overEx->buf.buf = overEx->iocpBuf;
+	overEx->buf.len = sizeof(overEx->iocpBuf);
+	ZeroMemory(&overEx->overLapped, sizeof(overEx->overLapped));
 }
 
 
@@ -47,7 +50,7 @@ double Player::getPlayerVelocity()
 }
 SOCKET Player::getPlayerSocket()
 {
-	return overEx.s;
+	return overEx->s;
 }
 
 

@@ -29,6 +29,13 @@ struct ScPacketMonsterRoaming
 	int kind;
 	D3DXVECTOR3 position;
 };
+struct ScPacketAcceptPlayerList
+{
+	int packetSize;
+	BYTE packetType;
+	int id;
+	D3DXVECTOR3 position;
+};
 //  CS_Packet
 struct CsPacketMove
 {
