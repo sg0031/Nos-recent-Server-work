@@ -66,7 +66,7 @@ struct PlayerInfo
 		playerDirection.x = 0;
 		playerDirection.y = 0;
 		playerDirection.z = 1;
-		playerVelocity = 0.5;
+		playerVelocity = 10;
 		characterType = -1;
 		id = -1;
 		play = false;
@@ -90,24 +90,24 @@ struct RoomInfo
 	int roomNum;
 	PlayerInfo maxPlayer[4];
 };
-struct Monster
-{
-	int monsterType;
-	int attack;
-	int health;
-	int defence;
-	double monsterX, monsterZ;
-	double monsterVelocity;
-	Monster()
-	{
-		monsterType = rand()%4;
-		if (monsterType == 0)
-		{
-			attack = 20;
-			defence = 20;
-			health = 700;
-
-		}
-	}
-};
+//struct Monster
+//{
+//	int monsterType;
+//	int attack;
+//	int health;
+//	int defence;
+//	double monsterX, monsterZ;
+//	double monsterVelocity;
+//	Monster()
+//	{
+//		monsterType = rand()%4;
+//		if (monsterType == 0)
+//		{
+//			attack = 20;
+//			defence = 20;
+//			health = 700;
+//
+//		}
+//	}
+//};
 #pragma pack (pop)

@@ -23,7 +23,7 @@ public:
 	static void acceptThread();
 	static void lobbyThread();
 	static void workerThread();
-	static void processPacket(int id, char *ptr);
+	static void processPacket(int id, char *ptr,double deltTime);
 	static void sendPacket(int client, void* packet);
 };
 

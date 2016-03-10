@@ -10,7 +10,7 @@ mutex LogicServer::myLock;
 
 LogicServer::LogicServer()
 {
-	
+
 	FIFO init;
 	for (int i = 0; i < ROOM_MAX_PLAYER; ++i)
 	{
@@ -93,7 +93,7 @@ void LogicServer::acceptThread()
 
 	while (1)
 	{
-	//	myLock.lock();
+		//	myLock.lock();
 		int len = sizeof(clientAddr);
 		clientSock = WSAAccept(listenSock, (SOCKADDR*)&clientAddr,
 			&len, NULL, NULL);
@@ -101,7 +101,7 @@ void LogicServer::acceptThread()
 		if (clientSock == INVALID_SOCKET)
 			cout << "Client Socket Error" << endl;
 
-		
+
 		for (int i = 0; i < ROOM_MAX_PLAYER; ++i)
 		{
 			if (player[i].acceptPlayer == false)
@@ -112,12 +112,12 @@ void LogicServer::acceptThread()
 				break;
 			}
 		}
-	//	player[count].overEx.s = clientSock;
+		//	player[count].overEx.s = clientSock;
 		CreateIoCompletionPort((HANDLE)clientSock, io, count, 0);
 		//	cout << id << "명 접속" << endl;
 
-		unsigned long recvflag=0;
-		unsigned long ioByte=0;
+		unsigned long recvflag = 0;
+		unsigned long ioByte = 0;
 		int ret = 0;
 		ret = WSARecv(clientSock, &player[count].overEx->buf,
 			1, NULL, &recvflag,
@@ -125,11 +125,11 @@ void LogicServer::acceptThread()
 		if (ret == SOCKET_ERROR)
 		{
 			if (WSAGetLastError() != WSA_IO_PENDING)
-				cout << "error code : "<<WSAGetLastError() << endl;
+				cout << "error code : " << WSAGetLastError() << endl;
 		}
 		//count++;
 		cout << count << endl;
-	//	myLock.unlock();
+		//	myLock.unlock();
 	}
 }
 void LogicServer::lobbyThread()
@@ -141,11 +141,14 @@ void LogicServer::workerThread()
 	//패킷 재조립이란?
 	int retval;
 	unsigned long ioSize;
-	unsigned long recvSize=0;
+	unsigned long recvSize = 0;
 	unsigned long objectId;
 	unsigned long ioFlag = 0;
 	OverEx *over = nullptr;
-	
+	double currentTime = 0.0;
+
+	currentTime = clock();
+
 	while (1)
 	{
 		GetQueuedCompletionStatus(io, &ioSize, &objectId,
@@ -177,11 +180,18 @@ void LogicServer::workerThread()
 
 				if (dataToProcess >= needToBuild)
 				{
+					double newTime = clock();
+					double frameTime = newTime - currentTime;
+					if (frameTime > 0.25)
+						frameTime = 0.25;
+					currentTime = newTime;
+					//accumulator += frameTime;
 					//조립
 					memcpy(over->packetBuf + over->prevSize, buf, needToBuild);
 					//cout << static_cast<int>(Object_ID) << endl;
-					processPacket(static_cast<int>(objectId), over->packetBuf);
-
+					processPacket(static_cast<int>(objectId), over->packetBuf, frameTime);
+					//t += dt;
+					//accumulator -= dt;
 					over->currentSize = 0;
 					over->prevSize = 0;
 					buf += needToBuild;
@@ -205,7 +215,7 @@ void LogicServer::workerThread()
 		}
 	}
 }
-void LogicServer::processPacket(int id, char *ptr)
+void LogicServer::processPacket(int id, char *ptr, double deltaTime)
 {
 	//cout << "processPacket 진입" << endl;
 	//cout <<"id : "<< id << endl;
@@ -252,7 +262,7 @@ void LogicServer::processPacket(int id, char *ptr)
 		CsPacketMove *movePacket = reinterpret_cast<CsPacketMove*>(ptr);
 		player[id].playerDirection = movePacket->direction;
 		player[id].playerPosition = player[id].playerPosition +
-			(player[id].playerVelocity * player[id].playerDirection);
+			(player[id].playerVelocity * player[id].playerDirection*deltaTime);
 
 		for (int p = 0; p < ROOM_MAX_PLAYER; ++p)
 		{
@@ -309,6 +319,6 @@ void LogicServer::sendPacket(int client, void* packet)
 		&iobyte, sendFlag, &Send_Operation->overLapped, NULL);
 	if (retval != 0)
 		cout << "error sendpacket" << endl;
-	cout << client << "data Send" << endl;
+//	cout << client << "data Send" << endl;
 
 }

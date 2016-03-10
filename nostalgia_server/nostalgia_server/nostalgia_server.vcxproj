@@ -83,6 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="LogicServer.h" />
+    <ClInclude Include="Monster.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="ProtocolType.h" />
     <ClInclude Include="struct.h" />
@@ -90,6 +91,7 @@
   <ItemGroup>
     <ClCompile Include="LogicServer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Monster.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -160,7 +160,7 @@ void Server::processPacket(char* ptr)
 	}
 	case SC_MOVE_POSITION:
 	{
-		cout << "movePacket" << endl;
+//		cout << "movePacket" << endl;
 		ScPacketMove *move =
 			reinterpret_cast<ScPacketMove*>(ptr);
 		//cout << p->id << "," << p->x << "," << p->y << endl;
@@ -208,7 +208,7 @@ void Server::sendPacket(SOCKET s, void* buf)
 		cout << "WSASend() x Error" << endl;
 		cout << WSAGetLastError() << endl;
 	}
-	cout << "client data send" << endl;
+	//cout << "client data send" << endl;
 }
 
 int Server::getMyId()
