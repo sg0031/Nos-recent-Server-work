@@ -1,4 +1,4 @@
-
+#pragma once
 #define WM_SOCKET WM_USER+1
 #define MAX_SIZE 255
 
@@ -6,6 +6,11 @@
 #define BUF_SIZE 1024
 #define WM_SOCKET WM_USER+1
 #define ROOM_MAX_PLAYER 4
+#define MAX_MONSTER 10
+#define MAX_OBJECT 10
+#define SECTOR_LENGTH 10
+#define SECTOR_WIDETH 10
+
 
 enum
 {
@@ -19,6 +24,7 @@ enum
 	SC_READY,
 	SC_ROOM_LIST,
 	SC_PLAYER_LIST,
+	SC_SECTOR_UPDATE,
 
 	//ClientType
 	CS_MOVE=100,

@@ -1,12 +1,8 @@
 #pragma once
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#include<iostream>
-#include<vector>
-#include<thread>
-#include<mutex>
-#include<queue>
-#include<WinSock2.h>
+#include"stdafx.h"
 #include"protocol.h"
+#include"Monster.h"
 using namespace std;
 
 class LogicServer
@@ -17,6 +13,7 @@ class LogicServer
 	static PlayerInfo player[ROOM_MAX_PLAYER];
 	static priority_queue<FIFO,vector<FIFO>,Standard> playerID;
 	static mutex myLock;
+	static Sector sector[SECTOR_WIDETH][SECTOR_LENGTH];
 public:
 	LogicServer();
 	~LogicServer();

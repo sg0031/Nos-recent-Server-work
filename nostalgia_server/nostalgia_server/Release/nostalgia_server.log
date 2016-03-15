@@ -1,0 +1,12 @@
+﻿  LogicServer.cpp
+e:\nos\nos-recent-server-work\nostalgia_server\nostalgia_server\struct.h(83): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+e:\nos\nos-recent-server-work\nostalgia_server\nostalgia_server\struct.h(85): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+LogicServer.cpp(27): warning C4244: '+=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+LogicServer.cpp(29): warning C4244: '+=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+LogicServer.cpp(278): warning C4244: '인수': 'double'에서 'FLOAT'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  코드를 생성하고 있습니다.
+  1 of 309 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
+  코드를 생성했습니다.
+  nostalgia_server.vcxproj -> E:\Nos\Nos-recent-Server-work\nostalgia_server\Release\nostalgia_server.exe

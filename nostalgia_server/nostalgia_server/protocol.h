@@ -1,9 +1,8 @@
-
-
-#include <D3DX10Math.h>
-
+#pragma once
+#include "stdafx.h"
+//#include <WinSock2.h>
+//#include <D3DX10Math.h>
 #include "struct.h"
-#include "ProtocolType.h"
 
 #pragma pack (push, 1)
 // Game Logic Server 

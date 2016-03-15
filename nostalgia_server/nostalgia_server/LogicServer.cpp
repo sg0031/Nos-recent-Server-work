@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "LogicServer.h"
 
 
@@ -7,6 +8,7 @@ PlayerInfo LogicServer::player[ROOM_MAX_PLAYER];
 priority_queue<FIFO, vector<FIFO>, Standard> LogicServer::playerID;
 int LogicServer::count = 0;
 mutex LogicServer::myLock;
+Sector LogicServer::sector[SECTOR_WIDETH][SECTOR_LENGTH];
 
 LogicServer::LogicServer()
 {
@@ -18,10 +20,21 @@ LogicServer::LogicServer()
 		init.turn = i;
 		playerID.push(init);
 	}
+	for (int i = 0; i < SECTOR_WIDETH;++i)
+	{
+		for (int j = 0; j < SECTOR_LENGTH; ++j)
+		{
+			sector[i][j].startSectorPosition.z += (j*80.0);
+			sector[i][j].endSectorPosition.z += 80.0;
+			sector[i][j].startSectorPosition.x += (i*60.0);
+			sector[i][j].endSectorPosition.x += 60.0;
+		}
+	}
+
 	srand((unsigned)time(NULL));
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
-		cout << "ÃÊ±âÈ­ error" << endl;
+		cout << "init error" << endl;
 
 	SYSTEM_INFO is;
 	GetSystemInfo(&is);
@@ -128,7 +141,7 @@ void LogicServer::acceptThread()
 				cout << "error code : " << WSAGetLastError() << endl;
 		}
 		//count++;
-		cout << count << endl;
+		//cout << count << endl;
 		//	myLock.unlock();
 	}
 }
@@ -263,6 +276,7 @@ void LogicServer::processPacket(int id, char *ptr, double deltaTime)
 		player[id].playerDirection = movePacket->direction;
 		player[id].playerPosition = player[id].playerPosition +
 			(player[id].playerVelocity * player[id].playerDirection*deltaTime);
+
 
 		for (int p = 0; p < ROOM_MAX_PLAYER; ++p)
 		{

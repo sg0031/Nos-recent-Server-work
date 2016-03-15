@@ -1,4 +1,9 @@
-#include <Windows.h>
+#pragma once
+#include "stdafx.h"
+//#include <Windows.h>
+#include "Monster.h"
+
+
 #pragma pack (push, 1)
 struct FIFO
 {
@@ -17,6 +22,7 @@ enum EOperationType
 	Sendtype = 1,
 	Recvtype = 2
 };
+
 struct OverEx	//오버렙트구조체 확장
 {
 	OVERLAPPED overLapped;
@@ -31,13 +37,27 @@ struct OverEx	//오버렙트구조체 확장
 struct Object
 {
 	int kind;
+	D3DXVECTOR3 objectPosition;
 	double radius;
 };
 struct Sector
 {
-	int minX, maxX;
-	int minZ, maxZ;
-	Object array[100];
+	D3DXVECTOR3 startSectorPosition;
+	D3DXVECTOR3 endSectorPosition;
+	Object array[MAX_OBJECT];
+	OrcArchor archorArr[MAX_MONSTER];
+	OrcWarrior warriorArr[MAX_MONSTER];
+	OrcMaster masterArr[MAX_MONSTER];
+	OrcKing king;
+	Sector()
+	{
+		startSectorPosition.x = 0.0;
+		startSectorPosition.y = 0.0;
+		startSectorPosition.z = 0.0;
+		endSectorPosition.x = 0.0;
+		endSectorPosition.y = 0.0;
+		endSectorPosition.z = 0.0;
+	}
 };
 struct PlayerInfo
 {
