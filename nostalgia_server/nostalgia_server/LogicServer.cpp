@@ -14,23 +14,39 @@ LogicServer::LogicServer()
 {
 
 	FIFO init;
+	//FIFO que
 	for (int i = 0; i < ROOM_MAX_PLAYER; ++i)
 	{
 		init.data = i;
 		init.turn = i;
 		playerID.push(init);
 	}
+	//sector init
 	for (int i = 0; i < SECTOR_WIDETH;++i)
 	{
 		for (int j = 0; j < SECTOR_LENGTH; ++j)
 		{
-			sector[i][j].startSectorPosition.z += (j*80.0);
-			sector[i][j].endSectorPosition.z += 80.0;
-			sector[i][j].startSectorPosition.x += (i*60.0);
-			sector[i][j].endSectorPosition.x += 60.0;
+			sector[i][j].startSectorPosition.z = (j*80.0);
+			sector[i][j].endSectorPosition.z = sector[i][j].startSectorPosition.z+80.0;
+			sector[i][j].startSectorPosition.x = (i*60.0);
+			sector[i][j].endSectorPosition.x = sector[i][j].endSectorPosition.x+60.0;
+			sector[i][j].sectorNum.sectorNumX = i;
+			sector[i][j].sectorNum.sectorNumY = j;
+			for (int p = 0; p < MAX_OBJECT; ++p)
+			{
+				if (p % 2 == 0)
+				{
+					sector[i][j].arrayObject[p].radius = rand() % 15;
+					sector[i][j].arrayObject[p].kind = 1;
+					sector[i][j].arrayObject[p].objectPosition.x +=
+						(sector[i][j].startSectorPosition.x + rand()%20);
+					sector[i][j].arrayObject[p].objectPosition.z +=
+						(sector[i][j].startSectorPosition.z + rand() % 20);
+				}
+			}
 		}
 	}
-
+	//create thread
 	srand((unsigned)time(NULL));
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
@@ -252,6 +268,34 @@ void LogicServer::processPacket(int id, char *ptr, double deltaTime)
 		login.position = player[id].playerPosition;
 		sendPacket(id, &login);
 
+		
+		player[id].currentSector.sectorNumX = player[id].playerPosition.x/60.0;
+		player[id].currentSector.sectorNumY = player[id].playerPosition.z /80.0;
+		
+
+		unsigned long objectCount = 0;	
+		ScPacketObject sectorObjectPacket;
+		ZeroMemory(&sectorObjectPacket.objects, sizeof(sectorObjectPacket.objects));
+		myLock.lock();
+		for (int i = player[id].currentSector.sectorNumX - 1; i < player[id].currentSector.sectorNumX + 2; ++i)
+		{
+			for (int j = player[id].currentSector.sectorNumY - 1; j < player[id].currentSector.sectorNumY + 2; ++j)
+			{
+				memcpy_s(sectorObjectPacket.objects + objectCount,
+					sizeof(sectorObjectPacket.objects)-(sizeof(sector[i][j].arrayObject)*i),
+					sector[i][j].arrayObject,
+					sizeof(sector[i][j].arrayObject));
+				objectCount += 10;
+			}
+		}
+		sectorObjectPacket.position = player[id].currentSector;
+		sectorObjectPacket.id = player[id].id;
+		sectorObjectPacket.packetSize = sizeof(ScPacketObject);
+		sectorObjectPacket.packetType = SC_SECTOR_UPDATE;
+		myLock.unlock();
+		sendPacket(id, &sectorObjectPacket);
+
+
 		for (int p = 0; p < ROOM_MAX_PLAYER; ++p)
 		{
 			if (player[p].play == true)
@@ -277,6 +321,29 @@ void LogicServer::processPacket(int id, char *ptr, double deltaTime)
 		player[id].playerPosition = player[id].playerPosition +
 			(player[id].playerVelocity * player[id].playerDirection*deltaTime);
 
+		player[id].currentSector.sectorNumX = player[id].playerPosition.x / 60.0;
+		player[id].currentSector.sectorNumY = player[id].playerPosition.z / 80.0;
+		unsigned long objectCount = 0;
+		ScPacketObject sectorObjectPacket;
+		ZeroMemory(&sectorObjectPacket.objects, sizeof(sectorObjectPacket.objects));
+		myLock.lock();
+		for (int i = player[id].currentSector.sectorNumX - 1; i < player[id].currentSector.sectorNumX + 2; ++i)
+		{
+			for (int j = player[id].currentSector.sectorNumY - 1; j < player[id].currentSector.sectorNumY + 2; ++j)
+			{
+				memcpy_s(sectorObjectPacket.objects + objectCount,
+					sizeof(sectorObjectPacket.objects) - (sizeof(sector[i][j].arrayObject)*i),
+					sector[i][j].arrayObject,
+					sizeof(sector[i][j].arrayObject));
+				objectCount += 10;
+			}
+		}
+		sectorObjectPacket.position = player[id].currentSector;
+		sectorObjectPacket.id = player[id].id;
+		sectorObjectPacket.packetSize = sizeof(ScPacketObject);
+		sectorObjectPacket.packetType = SC_SECTOR_UPDATE;
+		myLock.unlock();
+		sendPacket(id, &sectorObjectPacket);
 
 		for (int p = 0; p < ROOM_MAX_PLAYER; ++p)
 		{
@@ -293,12 +360,7 @@ void LogicServer::processPacket(int id, char *ptr, double deltaTime)
 				}
 			}
 		}
-		//ScPacketMove packet;
-		//packet.packetSize = sizeof(ScPacketMove);
-		//packet.id = player[id].id;
-		//packet.packetType = SC_MOVE_ERROR_CHECK;
-		//packet.position = player[id].playerPosition;
-		//sendPacket(id, &packet);
+
 		break;
 	}
 	}

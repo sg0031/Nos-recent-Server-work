@@ -1,5 +1,11 @@
-#include <WinSock2.h>
+#include"Monster.h"
+#include"Protocol_type.h"
 #pragma pack (push, 1)
+struct sectorPosition
+{
+	int sectorNumX;
+	int sectorNumY;
+};
 enum EOperationType
 {
 	Sendtype = 1,
@@ -13,19 +19,33 @@ struct OverEx//오버렙트구조체 확장
 	int prevSize;	//이전데이타 크기
 	int currentSize;//현재데이타 크기
 	WSABUF buf;
-	char packetBuf[255];
-	char iocpBuf[4000];
+	char packetBuf[256];
+	char iocpBuf[4096];
 };
 struct Object
 {
 	int kind;
+	D3DXVECTOR3 objectPosition;
 	double radius;
 };
 struct Sector
 {
-	int minX, maxX;
-	int minZ, maxZ;
-	Object array[100];
+	D3DXVECTOR3 startSectorPosition;
+	D3DXVECTOR3 endSectorPosition;
+	Object arrayObject[MAX_OBJECT];
+	OrcArchor archorArr[MAX_MONSTER];
+	OrcWarrior warriorArr[MAX_MONSTER];
+	OrcMaster masterArr[MAX_MONSTER];
+	OrcKing king;
+	Sector()
+	{
+		startSectorPosition.x = 0.0;
+		startSectorPosition.y = 0.0;
+		startSectorPosition.z = 0.0;
+		endSectorPosition.x = 0.0;
+		endSectorPosition.y = 0.0;
+		endSectorPosition.z = 0.0;
+	}
 };
 
 struct RoomInfo
@@ -33,24 +53,5 @@ struct RoomInfo
 	int roomNum;
 //	PlayerInfo maxPlayer[4];
 };
-struct Monster
-{
-	int monsterType;
-	int attack;
-	int health;
-	int defence;
-	double monsterX, monsterZ;
-	double monsterVelocity;
-	Monster()
-	{
-		monsterType = rand() % 4;
-		if (monsterType == 0)
-		{
-			attack = 20;
-			defence = 20;
-			health = 700;
 
-		}
-	}
-};
 #pragma pack (pop)

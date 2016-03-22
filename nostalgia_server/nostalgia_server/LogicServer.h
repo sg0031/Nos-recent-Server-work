@@ -1,6 +1,5 @@
 #pragma once
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#include"stdafx.h"
 #include"protocol.h"
 #include"Monster.h"
 using namespace std;

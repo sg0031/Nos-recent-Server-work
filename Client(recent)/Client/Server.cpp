@@ -1,9 +1,21 @@
+#include "stdafx.h"
 #include "Server.h"
 
 Server::Server()
 {
 	myId = 0;
 	count = 0;
+	for (int i = 0; i < SECTOR_WIDETH; ++i)
+	{
+		for (int j = 0; j < SECTOR_LENGTH; ++j)
+		{
+			sector[i][j].startSectorPosition.z = (j*80.0);
+			sector[i][j].endSectorPosition.z = sector[i][j].startSectorPosition.z+80.0;
+			sector[i][j].startSectorPosition.x = (i*60.0);
+			sector[i][j].endSectorPosition.x = sector[i][j].startSectorPosition.x+60.0;
+		}
+	}
+	ZeroMemory(&objectList, sizeof(objectList));
 }
 Server::~Server()
 {
@@ -102,19 +114,19 @@ void Server::readPacket()
 	{
 		if (inPacketSize == 0)
 		{
-			inPacketSize = ptr[0];
+			inPacketSize = reinterpret_cast<int*>(ptr);
 		}
 
-		if (iobyte + savePacketSize >= inPacketSize)
+		if (iobyte + savePacketSize >= *inPacketSize)
 		{
 			memcpy(completeBuf + savePacketSize,
 				ptr,
-				inPacketSize - savePacketSize);
+				*inPacketSize - savePacketSize);
 
 			processPacket(completeBuf);
 
-			ptr += inPacketSize - savePacketSize;
-			iobyte -= inPacketSize - savePacketSize;
+			ptr += *inPacketSize - savePacketSize;
+			iobyte -= *inPacketSize - savePacketSize;
 			inPacketSize = 0;
 			savePacketSize = 0;
 		}
@@ -179,6 +191,13 @@ void Server::processPacket(char* ptr)
 	{
 		cout << "이동 동기화 체크" << endl;
 		ScPacketMove *check = reinterpret_cast<ScPacketMove*>(ptr);
+		break;
+	}
+	case SC_SECTOR_UPDATE:
+	{
+		ScPacketObject *object = reinterpret_cast<ScPacketObject*>(ptr);
+		ZeroMemory(&objectList, sizeof(objectList));
+		memcpy_s(&objectList, sizeof(objectList), &object->objects, sizeof(object->objects));
 		break;
 	}
 	}

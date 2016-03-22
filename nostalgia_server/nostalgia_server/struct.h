@@ -31,8 +31,8 @@ struct OverEx	//오버렙트구조체 확장
 	int prevSize;	//이전데이타 크기
 	int currentSize;//현재데이타 크기
 	WSABUF buf;
-	char packetBuf[255];
-	char iocpBuf[4000];
+	char packetBuf[256];
+	char iocpBuf[4096];
 };
 struct Object
 {
@@ -40,11 +40,17 @@ struct Object
 	D3DXVECTOR3 objectPosition;
 	double radius;
 };
+struct sectorPosition
+{
+	int sectorNumX;
+	int sectorNumY;
+};
 struct Sector
 {
+	sectorPosition sectorNum;
 	D3DXVECTOR3 startSectorPosition;
 	D3DXVECTOR3 endSectorPosition;
-	Object array[MAX_OBJECT];
+	Object arrayObject[MAX_OBJECT];
 	OrcArchor archorArr[MAX_MONSTER];
 	OrcWarrior warriorArr[MAX_MONSTER];
 	OrcMaster masterArr[MAX_MONSTER];
@@ -57,12 +63,17 @@ struct Sector
 		endSectorPosition.x = 0.0;
 		endSectorPosition.y = 0.0;
 		endSectorPosition.z = 0.0;
+		sectorNum.sectorNumX = 0;
+		sectorNum .sectorNumY=0;
 	}
 };
+
+
 struct PlayerInfo
 {
 	OverEx* overEx;
 	int id;
+	sectorPosition currentSector;
 	int characterType;
 	D3DXVECTOR3 playerPosition;
 	D3DXVECTOR3 playerDirection;
@@ -71,7 +82,6 @@ struct PlayerInfo
 	int health;
 	int mana;
 	int deFence;
-	int currentSector;
 	char itemQ;
 	char itemW;
 	int theNumberOfPlayer;
@@ -91,6 +101,9 @@ struct PlayerInfo
 		id = -1;
 		play = false;
 		acceptPlayer = false;
+
+		currentSector.sectorNumX = 0;
+		currentSector.sectorNumY = 0;
 
 		overEx = new OverEx;
 		ZeroMemory(&overEx->iocpBuf, sizeof(overEx->iocpBuf));

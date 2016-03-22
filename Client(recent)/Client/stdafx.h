@@ -1,0 +1,9 @@
+#pragma once
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#include <iostream>
+#include <time.h>
+#include <WinSock2.h>
+#include <D3DX10Math.h>
+#include "struct.h"
+#include "Protocol_type.h"
+#include "Protocol.h"

@@ -1,7 +1,7 @@
 
-#include "struct.h"
-#include "Protocol_type.h"
-#include <D3DX10Math.h>
+#include"stdafx.h"
+
+
 
 #pragma pack (push, 1)
 // Game Logic Server 
@@ -19,7 +19,25 @@ struct ScPacketSector
 	int packetSize;
 	BYTE packetType;
 	int id;
-	Sector area[9];
+	Sector area[3][3];
+};
+struct ScPacketObject
+{
+	int packetSize;
+	BYTE packetType;
+	int id;
+	sectorPosition position;
+	Object objects[100];
+};
+struct ScPacketMonster
+{
+	int packetSize;
+	BYTE packetType;
+	int id;
+	OrcArchor archorArr[MAX_MONSTER];
+	OrcWarrior warriorArr[MAX_MONSTER];
+	OrcMaster masterArr[MAX_MONSTER];
+	OrcKing king;
 };
 struct ScPacketMonsterRoaming
 {

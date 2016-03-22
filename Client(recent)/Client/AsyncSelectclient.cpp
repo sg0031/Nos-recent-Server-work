@@ -1,9 +1,9 @@
+#include "stdafx.h"
 #ifdef _DEBUG
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #endif
 
 #pragma comment (lib, "ws2_32.lib")
-
 #include "Server.h"
 
 using namespace std;
@@ -74,25 +74,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM IParam)
 		hdc = BeginPaint(hWnd, &ps);
 		hBrush = CreateSolidBrush(RGB(255, 255, 255));
 		oldBrush = (HBRUSH)SelectObject(hdc, hBrush);
-
 		for (int p = 0; p < ROOM_MAX_PLAYER; ++p)
 		{
-			if(s->Player[p].getPlay()==true)
+			if (s->Player[p].getPlay() == true)
+			{
 				Rectangle(hdc,
 					s->Player[p].getPlayerPosition().x,
 					s->Player[p].getPlayerPosition().z,
 					s->Player[p].getPlayerPosition().x + 20,
 					s->Player[p].getPlayerPosition().z + 20);
+				for (int i = 0; i < 100; ++i)
+				{
+					Ellipse(hdc, s->objectList[i].objectPosition.x - s->objectList[i].radius,
+						s->objectList[i].objectPosition.z - s->objectList[i].radius,
+						s->objectList[i].objectPosition.x + s->objectList[i].radius,
+						s->objectList[i].objectPosition.z + s->objectList[i].radius);
+				}
+			}
+
 		}
 
-		//for (int i = 0; i < 8; ++i)
-		//{
-		//	Rectangle(hdc, 
-		//		s->Player[i].P_x, 
-		//		s->Player[i].P_y,
-		//		s->Player[i].P_x + 20, 
-		//		s->Player[i].P_y + 20);
-		//}
 		SelectObject(hdc, oldBrush);
 		DeleteObject(hBrush);
 		EndPaint(hWnd, &ps);

@@ -1,10 +1,11 @@
 #pragma once
-#include "Protocol.h"
+#include"stdafx.h"
 
 class Player
 {
 	OverEx* overEx;
 	int id;
+	sectorPosition currentSector;
 	int character_type;
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 direction;
@@ -13,7 +14,6 @@ class Player
 	int health;
 	int mana;
 	int defence;
-	int current_sector;
 	char item_q;
 	char item_w;
 	int the_number_of_player;
@@ -30,11 +30,13 @@ public:
 	double getPlayerVelocity();
 	int getPlayerID();
 	SOCKET getPlayerSocket();
+	sectorPosition getPlayerSecotr() { return currentSector; }
 
 	void setPlayerVelocity(double velocity);
 	void setPlay(bool p);
 	void setPlayerID(int id);
 	void setPlayerPosition(D3DXVECTOR3 position);
 	void setPlayerDirection(D3DXVECTOR3 direction);
+	void setPlayerSector(sectorPosition sec) { currentSector = sec; }
 };
 

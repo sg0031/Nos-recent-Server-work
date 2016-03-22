@@ -22,6 +22,12 @@ protected:
 public:
 	Monster();
 	~Monster();
+	void setHealth(int h) { health = h; }
+	void setDefence(int d) { defence = d; }
+	void setAttack(int a) { attack = a; }
+	void setVelocity(double v) { monsterVelocity = v; }
+	void setPosition(D3DXVECTOR3 p) { monsterPosition = p; }
+	void setDirection(D3DXVECTOR3 d) { monsterDirection = d; }
 	//virtual void decreaseHealth() = 0;
 	//virtual void changeTarget() = 0;
 	//virtual void attackPlayer()=0;
